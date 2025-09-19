@@ -1,3 +1,4 @@
+// client\src\components\chat\InputBar.tsx
 import React, { useState } from 'react';
 
 // Определяем интерфейс для пропсов

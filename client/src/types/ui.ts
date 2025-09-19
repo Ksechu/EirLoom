@@ -1,3 +1,5 @@
+// client\src\types\ui.ts
+
 // Определяем доступные "виды" для навигации
 export type ActiveView = 'chat-list' | 'chat' | 'prompt-settings' | 'persona-settings';
 

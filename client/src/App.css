@@ -1,10 +1,14 @@
-/* client/src/App.css (фрагмент) */
+/* client\src\App.css */
+
 .app-main-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 .main-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   /* стили для верхней панели */
   display: flex;
   justify-content: space-around;

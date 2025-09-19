@@ -1,3 +1,4 @@
+// client\src\components\chat\ChatWindow.tsx
 import React from 'react';
 
 // Определяем интерфейс для пропсов, которые принимает компонент

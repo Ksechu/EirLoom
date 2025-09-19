@@ -1,13 +1,19 @@
-export interface GenerationSettings {
-  model: string;
-  temperature: number;
-  top_p: number;
-  // Добавьте другие параметры по мере необходимости
-}
-
-export interface GenerationRequest {
+// client/src/types/api.ts
+export interface ApiSettings {
   provider: string;
   apiKey: string;
-  messages: { role: string; content: string }[];
-  settings: GenerationSettings;
+  model: string;
+  providerUrl: string; // Добавляем URL провайдера
+}
+
+export interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface GenerationSettings {
+  temperature: number;
+  top_p: number;
+  top_k?: number;
+  repetition_penalty?: number;
 }

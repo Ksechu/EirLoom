@@ -1,3 +1,4 @@
+// client\src\components\chat\ChatContainer.tsx
 import React from 'react';
 import ChatWindow from './ChatWindow';
 import InputBar from './InputBar';

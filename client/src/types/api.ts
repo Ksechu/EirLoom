@@ -3,6 +3,7 @@ export interface ApiSettings {
   provider: string;
   apiKey: string;
   model: string;
+  providerUrl: string; // Добавляем URL провайдера
 }
 
 export interface Message {

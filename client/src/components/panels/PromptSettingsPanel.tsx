@@ -1,12 +1,13 @@
-// client/src/components/panels/PromptSettingsPanel.tsx
+// client\src\components\panels\PromptSettingsPanel.tsx
 import React, { useState } from 'react';
 import { GenerationSettings } from '../../types/api';
 
 interface PromptSettingsPanelProps {
   onClose: () => void;
-  onSave: (settings: GenerationSettings) => void;
+  onSave: (settings: GenerationSettings, prompt: string) => void;
   onCancel: () => void;
   initialSettings: GenerationSettings;
+  initialPrompt: string;
 }
 
 const defaultSettings: GenerationSettings = {
@@ -16,11 +17,12 @@ const defaultSettings: GenerationSettings = {
   repetition_penalty: 1.1,
 };
 
-const PromptSettingsPanel: React.FC<PromptSettingsPanelProps> = ({ onClose, onSave, onCancel, initialSettings }) => {
+const PromptSettingsPanel: React.FC<PromptSettingsPanelProps> = ({ onClose, onSave, onCancel, initialSettings, initialPrompt }) => {
   const [settings, setSettings] = useState<GenerationSettings>(initialSettings);
+  const [promptText, setPromptText] = useState<string>(initialPrompt);
   const [isPromptExpanded, setIsPromptExpanded] = useState<boolean>(true);
   const [isParamsExpanded, setIsParamsExpanded] = useState<boolean>(true);
-
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSettings(prev => ({ ...prev, [name]: parseFloat(value) }));
@@ -28,10 +30,10 @@ const PromptSettingsPanel: React.FC<PromptSettingsPanelProps> = ({ onClose, onSa
   
   const handleResetToDefault = () => {
     setSettings(defaultSettings);
+    setPromptText('');
   };
   
   const handleGetFullPrompt = () => {
-    // Эта логика будет реализована позже
     console.log("Получить весь промпт");
   };
 
@@ -46,18 +48,17 @@ const PromptSettingsPanel: React.FC<PromptSettingsPanelProps> = ({ onClose, onSa
       </div>
 
       <div className="panel-controls">
-        <div className="panel-actions">
-          <button onClick={() => onCancel()}>Отмена</button>
-          <button onClick={() => onSave(settings)}>Сохранить</button>
-        </div>
-
         <div className="collapsible-section">
           <div className="collapsible-header" onClick={() => setIsPromptExpanded(!isPromptExpanded)}>
             <h3>Промпт</h3>
           </div>
           {isPromptExpanded && (
             <div className="collapsible-content">
-              <textarea placeholder="Введите текст промпта..."></textarea>
+              <textarea
+                placeholder="Введите текст промпта..."
+                value={promptText}
+                onChange={(e) => setPromptText(e.target.value)}
+              ></textarea>
             </div>
           )}
         </div>
@@ -121,6 +122,11 @@ const PromptSettingsPanel: React.FC<PromptSettingsPanelProps> = ({ onClose, onSa
               </div>
             </div>
           )}
+        </div>
+
+        <div className="panel-actions">
+          <button onClick={() => onCancel()}>Отмена</button>
+          <button onClick={() => onSave(settings, promptText)}>Сохранить</button>
         </div>
       </div>
       

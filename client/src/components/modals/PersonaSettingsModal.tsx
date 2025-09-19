@@ -1,3 +1,4 @@
+// client\src\components\modals\PersonaSettingsModal.tsx
 import React from 'react';
 
 const PersonaSettingsModal: React.FC = () => {

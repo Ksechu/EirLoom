@@ -1,3 +1,4 @@
+// client/src/components/ui/Header.tsx
 import React from 'react';
 import { ActiveView } from '../../types/ui';
 

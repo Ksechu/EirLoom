@@ -1,44 +1,56 @@
+// server\controllers\apiController.ts
 import { Request, Response } from 'express';
 import axios from 'axios';
-import { GenerationRequest } from '../types/api';
+import { GenerationSettings, Message } from '../types/api';
 
-// Тестовый маршрут
-export const testConnection = (req: Request, res: Response) => {
-  res.json({ message: 'Backend is up and running!' });
-};
-
-// Маршрут для генерации текста
-export const generateText = async (req: Request, res: Response) => {
-  const { provider, apiKey, messages, settings }: GenerationRequest = req.body;
-
-  let modelUrl = '';
-  // Используем Record<string, string> для динамических ключей
-  let headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  let payload: any = {};
-
-  console.log(settings);
-
-  if (provider === 'openrouter') {
-    modelUrl = 'https://openrouter.ai/api/v1/chat/completions';
-    headers['Authorization'] = `Bearer ${apiKey}`;
-    payload = {
-      model: settings.model,
-      messages,
-      temperature: settings.temperature,
-      top_p: settings.top_p,
-    };
-  }
+export const generateTextController = async (req: Request, res: Response) => {
+  const { messages, settings, apiKey, model, providerUrl, systemPrompt } = req.body;
 
   try {
-    const response = await axios.post(modelUrl, payload, { headers });
+    // Создаем новый массив сообщений.
+    // Копируем все сообщения из чата.
+    const payloadMessages: Message[] = [...messages];
+
+    // Если системный промпт существует, добавляем его в конец массива сообщений.
+    if (systemPrompt) {
+      payloadMessages.push({
+        role: 'system',
+        content: systemPrompt
+      });
+    }
+
+    const payload = {
+      model: model,
+      messages: payloadMessages, // Отправляем обновленный массив
+      ...settings,
+    };
+
+    const headers = {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    };
+
+    console.log('[Бэкенд]: Отправка запроса к API...');
+    console.log('[Бэкенд]: URL:', providerUrl);
+    console.log('[Бэкенд]: Модель:', model);
+    console.log('[Бэкенд]: Системный промпт:', systemPrompt || 'Отсутствует');
+    console.log('[Бэкенд]: Настройки:', settings);
+
+    const response = await axios.post(providerUrl, payload, { headers });
+
+    console.log('[Бэкенд]: Ответ получен. Отправка на фронтенд.');
     res.json(response.data);
-  } catch (error: any) {
-    console.error('API Error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({
-      error: 'Failed to generate text from model.',
-      details: error.response?.data || error.message
-    });
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('[Бэкенд - Ошибка Axios]:', error.message);
+      if (error.response) {
+        console.error('[Бэкенд - Ответ провайдера]:', error.response.data);
+      }
+      res.status(error.response?.status || 500).json({ error: 'Произошла ошибка при запросе к API. Проверьте ключ и настройки.' });
+    } else {
+      console.error('[Бэкенд - Неизвестная ошибка]:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
   }
 };

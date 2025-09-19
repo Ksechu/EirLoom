@@ -6,7 +6,9 @@ export const generateText = async (
   settings: GenerationSettings,
   apiKey: string,
   provider: string,
-  model: string // Добавляем модель в аргументы
+  model: string,
+  providerUrl: string,
+  systemPrompt: string,
 ) => {
   try {
     const response = await fetch('/api/generate', {
@@ -19,7 +21,9 @@ export const generateText = async (
         settings,
         apiKey,
         provider,
-        model, // Передаем модель в тело запроса
+        model,
+        providerUrl,
+        systemPrompt,
       }),
     });
 

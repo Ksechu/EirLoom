@@ -1,22 +1,24 @@
-// client/src/components/modals/ApiConnectModal.tsx
+// client\src\components\modals\ApiConnectModal.tsx
 import React, { useState } from 'react';
+import { ApiSettings } from '../../types/api';
 
 interface ApiConnectModalProps {
-  onSave: (settings: { provider: string; apiKey: string; model: string }) => void;
-  initialSettings?: { provider: string; apiKey: string; model?: string };
+  onSave: (settings: ApiSettings) => void;
+  initialSettings?: ApiSettings;
   onClose: () => void;
 }
 
 const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettings, onClose }) => {
   const [keys, setKeys] = useState<string[]>(initialSettings?.apiKey ? [initialSettings.apiKey] : ['']);
   const [model, setModel] = useState<string>(initialSettings?.model || '');
+  const [providerUrl, setProviderUrl] = useState<string>(initialSettings?.providerUrl || '');
   const [autoRotate, setAutoRotate] = useState<boolean>(false);
 
   const isLastKeyEmpty = keys[keys.length - 1] === '';
-  const canAddKey = keys.length < 12 && !isLastKeyEmpty;
+  const isLimitReached = keys.length >= 12;
 
   const handleAddKey = () => {
-    if (canAddKey) {
+    if (!isLimitReached && !isLastKeyEmpty) {
       setKeys([...keys, '']);
     }
   };
@@ -34,7 +36,7 @@ const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettin
     newKeys[index] = value;
     setKeys(newKeys);
   };
-  
+
   const handleMoveUp = (index: number) => {
     if (index > 0) {
       const newKeys = [...keys];
@@ -52,7 +54,12 @@ const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettin
   };
 
   const handleSave = () => {
-    onSave({ provider: 'openrouter', apiKey: keys[0], model: model });
+    onSave({
+      provider: 'openrouter',
+      apiKey: keys[0],
+      model: model,
+      providerUrl: providerUrl,
+    });
     onClose();
   };
 
@@ -61,7 +68,12 @@ const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettin
       <h2>Настройки подключения к API</h2>
       <div>
         <label>URL провайдера:</label>
-        <input type="text" value="https://openrouter.ai/api/v1/chat/completions" readOnly />
+        <input
+          type="text"
+          value={providerUrl}
+          onChange={(e) => setProviderUrl(e.target.value)}
+          placeholder="Например, https://openrouter.ai/api/v1/chat/completions"
+        />
       </div>
 
       <div>
@@ -70,13 +82,12 @@ const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettin
           type="text"
           value={model}
           onChange={(e) => setModel(e.target.value)}
-          placeholder="Например, mistralai/mistral-7b-instruct-v0.2"
+          placeholder="Например, deepseek/deepseek-chat-v3.1"
         />
       </div>
 
       <div>
         <label>Ключи API:</label>
-        <button onClick={handleAddKey} disabled={!canAddKey}>+</button>
         {keys.map((key, index) => (
           <div key={index}>
             <input
@@ -89,13 +100,18 @@ const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettin
               <button onClick={() => handleRemoveKey(index)}>-</button>
             )}
             <button onClick={() => handleMoveUp(index)} disabled={index === 0}>
-                ↑
+              ↑
             </button>
             <button onClick={() => handleMoveDown(index)} disabled={index === keys.length - 1}>
-                ↓
+              ↓
             </button>
           </div>
         ))}
+        {isLimitReached ? (
+          <p>Достигнут лимит в 12 ключей</p>
+        ) : (
+          <button onClick={handleAddKey} disabled={isLastKeyEmpty}>+</button>
+        )}
       </div>
 
       <div>
@@ -108,7 +124,7 @@ const ApiConnectModal: React.FC<ApiConnectModalProps> = ({ onSave, initialSettin
           Автосмена ключей
         </label>
       </div>
-      
+
       <div>
         <button onClick={onClose}>Отмена</button>
         <button onClick={handleSave}>Сохранить</button>

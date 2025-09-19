@@ -1,3 +1,4 @@
+// client\src\components\panels\CharacterPanel.tsx
 import React from 'react';
 
 interface CharacterPanelProps {

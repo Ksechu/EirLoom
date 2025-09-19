@@ -1,10 +1,9 @@
-import express from 'express';
-// Импортируем именованные экспорты
-import { testConnection, generateText } from '../controllers/apiController';
+// server\routes\apiRoutes.ts
+import { Router } from 'express';
+import { generateTextController } from '../controllers/apiController';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/test-connection', testConnection);
-router.post('/generate', generateText);
+router.post('/generate', generateTextController);
 
 export default router;

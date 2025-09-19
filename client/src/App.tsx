@@ -18,13 +18,14 @@ function App() {
   const [activePanel, setActivePanel] = useState<PanelType>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const [apiSettings, setApiSettings] = useState<ApiSettings>({ provider: 'openrouter', apiKey: '', model: '' });
+  const [apiSettings, setApiSettings] = useState<ApiSettings>({ provider: 'openrouter', apiKey: '', model: '', providerUrl: '' });
   const [promptSettings, setPromptSettings] = useState<GenerationSettings>({
     temperature: 0.1,
     top_p: 0.9,
     top_k: 0,
     repetition_penalty: 1.0,
   });
+  const [systemPrompt, setSystemPrompt] = useState<string>('');
 
   const handleSendMessage = async (text: string) => {
     const newMessage: Message = { role: 'user', content: text };
@@ -36,14 +37,16 @@ function App() {
         promptSettings,
         apiSettings.apiKey,
         apiSettings.provider,
-        apiSettings.model // Теперь это корректный аргумент
+        apiSettings.model,
+        apiSettings.providerUrl,
+        systemPrompt,
       );
 
       const botMessage: Message = response.choices[0].message;
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Извините, произошла ошибка. Проверьте настройки API." }]);
+      console.error('Ошибка:', error);
+      console.error("Произошла ошибка при отправке запроса. Проверьте консоль для деталей.");
     }
   };
 
@@ -52,9 +55,9 @@ function App() {
     setActiveModal(null);
   };
   
-  const handlePromptSave = (settings: GenerationSettings) => {
+  const handlePromptSave = (settings: GenerationSettings, prompt: string) => {
     setPromptSettings(settings);
-    setActivePanel(null);
+    setSystemPrompt(prompt);
   };
   
   const handlePromptCancel = () => {
@@ -78,6 +81,7 @@ function App() {
             {activePanel === 'character' && (
               <CharacterPanel onClose={() => setActivePanel(null)} />
             )}
+            {/* В будущем здесь добавится панель с ботами, которая будет заменять CharacterPanel */}
           </>
         )}
         {activeView === 'chat-list' && (
@@ -90,6 +94,7 @@ function App() {
             onSave={handlePromptSave}
             onCancel={handlePromptCancel}
             initialSettings={promptSettings}
+            initialPrompt={systemPrompt}
           />
         )}
 
