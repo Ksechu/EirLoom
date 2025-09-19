@@ -1,0 +1,57 @@
+/* client/src/App.css (фрагмент) */
+.app-main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.main-header {
+  /* стили для верхней панели */
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+}
+.app-content {
+  flex-grow: 1;
+  display: flex;
+  position: relative;
+}
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 300px; /* или любой другой размер */
+  background-color: #222;
+  color: white;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+}
+.sidebar-panel.right-panel {
+  right: 0;
+  transform: translateX(100%);
+}
+.sidebar-panel.active {
+  transform: translateX(0);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background-color: #444;
+  padding: 20px;
+  border-radius: 8px;
+}
