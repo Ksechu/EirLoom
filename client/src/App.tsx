@@ -18,42 +18,47 @@ function App() {
   const [activePanel, setActivePanel] = useState<PanelType>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // Состояние для хранения настроек API
-  const [apiSettings, setApiSettings] = useState<ApiSettings>({ provider: 'openrouter', apiKey: '' });
+  const [apiSettings, setApiSettings] = useState<ApiSettings>({ provider: 'openrouter', apiKey: '', model: '' });
+  const [promptSettings, setPromptSettings] = useState<GenerationSettings>({
+    temperature: 0.1,
+    top_p: 0.9,
+    top_k: 0,
+    repetition_penalty: 1.0,
+  });
 
   const handleSendMessage = async (text: string) => {
-    // 1. Добавляем сообщение пользователя в чат
     const newMessage: Message = { role: 'user', content: text };
     setMessages(prev => [...prev, newMessage]);
 
-    // 2. Отправляем запрос на генерацию
     try {
-      // Пока что используем заглушки для настроек
-      const settings: GenerationSettings = {
-        model: 'deepseek/deepseek-chat-v3.1',
-        temperature: 0.1,
-        top_p: 0.9,
-      };
-
       const response = await generateText(
-        [...messages, newMessage], // Отправляем всю историю чата
-        settings,
+        [...messages, newMessage],
+        promptSettings,
         apiSettings.apiKey,
-        apiSettings.provider
+        apiSettings.provider,
+        apiSettings.model // Теперь это корректный аргумент
       );
 
-      // 3. Добавляем ответ бота в чат
       const botMessage: Message = response.choices[0].message;
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, something went wrong. Check your API settings." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Извините, произошла ошибка. Проверьте настройки API." }]);
     }
   };
 
   const handleApiSave = (settings: ApiSettings) => {
     setApiSettings(settings);
     setActiveModal(null);
+  };
+  
+  const handlePromptSave = (settings: GenerationSettings) => {
+    setPromptSettings(settings);
+    setActivePanel(null);
+  };
+  
+  const handlePromptCancel = () => {
+    setActivePanel(null);
   };
 
   return (
@@ -76,16 +81,22 @@ function App() {
           </>
         )}
         {activeView === 'chat-list' && (
-          <div className="placeholder-view"><h1>Chats List</h1></div>
+          <div className="placeholder-view"><h1>Список чатов</h1></div>
         )}
 
         {activePanel === 'prompt-settings' && (
-          <PromptSettingsPanel onClose={() => setActivePanel(null)} />
+          <PromptSettingsPanel
+            onClose={() => setActivePanel(null)}
+            onSave={handlePromptSave}
+            onCancel={handlePromptCancel}
+            initialSettings={promptSettings}
+          />
         )}
 
         {activeModal === 'api-connect' && (
           <Modal onClose={() => setActiveModal(null)}>
             <ApiConnectModal
+              onClose={() => setActiveModal(null)}
               onSave={handleApiSave}
               initialSettings={apiSettings}
             />

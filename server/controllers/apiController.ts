@@ -18,6 +18,8 @@ export const generateText = async (req: Request, res: Response) => {
   };
   let payload: any = {};
 
+  console.log(settings);
+
   if (provider === 'openrouter') {
     modelUrl = 'https://openrouter.ai/api/v1/chat/completions';
     headers['Authorization'] = `Bearer ${apiKey}`;

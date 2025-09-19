@@ -1,6 +1,8 @@
+// client/src/types/api.ts
 export interface ApiSettings {
   provider: string;
   apiKey: string;
+  model: string;
 }
 
 export interface Message {
@@ -9,7 +11,8 @@ export interface Message {
 }
 
 export interface GenerationSettings {
-  model: string;
   temperature: number;
   top_p: number;
+  top_k?: number;
+  repetition_penalty?: number;
 }
