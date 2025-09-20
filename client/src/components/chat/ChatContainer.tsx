@@ -2,17 +2,20 @@
 import React from 'react';
 import ChatWindow from './ChatWindow';
 import InputBar from './InputBar';
+import { Message } from '../../types/api';
 
 interface ChatContainerProps {
-  messages: { role: string; content: string; }[];
-  onSendMessage: (text: string) => void;
+  messages: Message[];
+  onSendMessage: (text: string) => Promise<void>;
+  disabled: boolean;
 }
 
-const ChatContainer: React.FC<ChatContainerProps> = ({ messages, onSendMessage }) => {
+const ChatContainer: React.FC<ChatContainerProps> = ({ messages, onSendMessage, disabled }) => {
   return (
     <div className="chat-container">
       <ChatWindow messages={messages} />
-      <InputBar onSendMessage={onSendMessage} />
+      {/* Передаем пропс disabled в InputBar */}
+      <InputBar onSendMessage={onSendMessage} disabled={disabled} />
     </div>
   );
 };

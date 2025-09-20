@@ -1,3 +1,4 @@
+// server/controllers/apiController.ts
 import { Request, Response } from 'express';
 import axios from 'axios';
 import { GenerationSettings, Message, CharacterSettings } from '../types/api';
@@ -62,7 +63,7 @@ export const generateTextController = async (req: Request, res: Response) => {
     // Создаем новый массив сообщений для отправки.
     const payloadMessages: Message[] = [...messages];
 
-    // Добавляем информацию бота в начало
+    // Добавляем информацию бота в начало 
     if (fullContext) {
       payloadMessages.unshift({
         role: 'system',
@@ -70,16 +71,12 @@ export const generateTextController = async (req: Request, res: Response) => {
       });
     }
 
-    // Добавляем промпт
+    // Добавляем промпт 
     if (fullContext) {
       payloadMessages.unshift({
         role: 'system',
         content: systemPrompt
       });
-      // payloadMessages.push({
-      //   role: 'system',
-      //   content: systemPrompt
-      // });
     }
 
     let payload: any;
@@ -89,12 +86,7 @@ export const generateTextController = async (req: Request, res: Response) => {
         case 'openrouter':
             payload = buildOpenRouterPayload(payloadMessages, settings, model);
             break;
-        // Здесь можно добавить другие провайдеры, например:
-        // case 'google':
-        //     payload = buildGooglePayload(payloadMessages, settings, model);
-        //     break;
         default:
-            // throw new Error('Неизвестный провайдер API');
             payload = buildOpenRouterPayload(payloadMessages, settings, model);
             break;
     }

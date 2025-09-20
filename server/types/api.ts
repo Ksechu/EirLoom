@@ -1,4 +1,4 @@
-// client/src/types/api.ts
+// server/src/types/api.ts
 export interface ApiSettings {
   provider: string;
   apiKey: string;

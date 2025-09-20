@@ -1,23 +1,22 @@
+// client\src\components\ui\Header.tsx
 import React from 'react';
 import { ActiveView } from '../../types/ui';
 
 interface HeaderProps {
   onNavClick: (view: ActiveView) => void;
   onModalClick: (modalType: 'api-connect' | 'persona-settings') => void;
-  // Меняем тип пропса
   onPanelToggle: (panelType: 'character' | 'prompt-settings') => void;
+  onNewChat: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavClick, onModalClick, onPanelToggle }) => {
+const Header: React.FC<HeaderProps> = ({ onNavClick, onModalClick, onPanelToggle, onNewChat }) => {
   return (
     <header className="main-header">
       <h1>EirLoom</h1>
       <nav>
-        {/* Кнопка для левой панели */}
         <button onClick={() => onPanelToggle('character')}>Character</button>
-        <button onClick={() => onNavClick('chat')}>New Chat</button>
+        <button onClick={onNewChat}>New Chat</button>
         <button onClick={() => onNavClick('chat-list')}>Chats</button>
-        {/* Кнопка для правой панели */}
         <button onClick={() => onPanelToggle('prompt-settings')}>Settings</button>
         <button onClick={() => onModalClick('api-connect')}>API</button>
         <button onClick={() => onModalClick('persona-settings')}>Persona</button>

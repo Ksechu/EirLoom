@@ -1,0 +1,87 @@
+/* client/src/components/chat/ChatList.css */
+.chat-list-container {
+  padding: 1rem;
+  background-color: var(--color-background-secondary);
+  border-right: 1px solid var(--color-border);
+  min-width: 250px;
+  max-width: 300px;
+  overflow-y: auto;
+}
+
+.chat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-list-item {
+  display: flex; /* Добавлено */
+  justify-content: space-between; /* Добавлено */
+  align-items: center; /* Добавлено */
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.chat-list-item:hover {
+  background-color: var(--color-hover);
+}
+
+.chat-list-item.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-dark);
+}
+
+.chat-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Добавлено */
+}
+
+.chat-title {
+  font-weight: bold;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-last-message {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-date {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+  margin-top: 0.25rem;
+}
+
+.no-chats-message {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-top: 2rem;
+}
+
+/* Стили для кнопки удаления */
+.delete-button {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 1rem;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.delete-button:hover {
+  color: var(--color-danger-dark);
+}
