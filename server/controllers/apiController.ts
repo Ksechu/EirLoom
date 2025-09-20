@@ -71,12 +71,16 @@ export const generateTextController = async (req: Request, res: Response) => {
       });
     }
 
-    // Добавляем промпт 
-    if (fullContext) {
+    // Добавляем промпт
+    if (systemPrompt) {
       payloadMessages.unshift({
         role: 'system',
         content: systemPrompt
       });
+      // payloadMessages.push({
+      //   role: 'system',
+      //   content: systemPrompt
+      // });
     }
 
     let payload: any;

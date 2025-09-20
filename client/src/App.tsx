@@ -29,7 +29,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<ActiveView>('chat');
   const [activeModal, setActiveModal] = useState<ModalType>(null);
-  const [activePanel, setActivePanel] = useState<PanelType>(null);
+  const [activePanels, setActivePanels] = useState<PanelType[]>([]);
 
   // Состояния для хранения актуальных данных.
   // Глобальные настройки (APIs, Prompts) и чаты с персонажами.
@@ -59,7 +59,7 @@ function App() {
         setCharacters(loadedCharacters);
         setChats(loadedChats);
         // При загрузке активируем последний созданный чат
-        const lastChat = loadedChats.length > 0 ? loadedChats.sort((a, b) => b.createdAt - a.createdAt)[0] : null;
+        const lastChat = loadedChats.length > 0 ? loadedChats.sort((a: Chat, b: Chat) => b.createdAt - a.createdAt)[0] : null;
         setActiveChatId(lastChat?.id || null);
 
       } catch (err) {
@@ -77,12 +77,13 @@ function App() {
     // Сбрасываем активный чат. Новый чат будет создан при сохранении персонажа.
     setActiveChatId(null);
     setActiveView('chat');
-    setActivePanel('character'); // Открываем панель персонажа по умолчанию
+    setActivePanels(['character', 'prompt-settings']); // Открываем обе панели для нового чата
   };
 
   const handleSelectChat = (chatId: string) => {
     setActiveChatId(chatId);
     setActiveView('chat');
+    setActivePanels(['character', 'prompt-settings']); // Открываем обе панели при выборе существующего чата
   };
 
   const handleDeleteChat = async (chatId: string) => {
@@ -130,6 +131,7 @@ function App() {
     // Получаем настройки для генерации
     const apiSettings = globalApis[0]?.settings;
     const promptSettings = globalPrompts[0]?.settings;
+    const systemPrompt = globalPrompts[0]?.systemPrompt;
     const characterData = characters.find(char => char.id === currentChat.characterId);
     const characterSettings = characterData?.settings;
 
@@ -143,7 +145,8 @@ function App() {
         newMessages,
         promptSettings,
         apiSettings,
-        characterSettings
+        characterSettings,
+        systemPrompt
       );
 
       // Обрабатываем ответ и обновляем состояние
@@ -173,7 +176,7 @@ function App() {
     const promptToSave: Prompt = { id: 'global_prompt', name: 'User Prompt', settings, systemPrompt: prompt };
     await db.prompts.put(promptToSave);
     setGlobalPrompts([promptToSave]);
-    setActivePanel(null);
+    // Панель остается открытой
   };
   
   const handleCharacterSave = async (settings: CharacterSettings) => {
@@ -214,7 +217,7 @@ function App() {
       const existingCharacter = characters.find(char => char.id === existingChat.characterId);
       if (!existingCharacter) return;
 
-      const updatedCharacter = { ...existingCharacter, name: settings.characterPersona || 'Unnamed Character', settings };
+      const updatedCharacter = { ...existingCharacter, name: existingChat.title || 'Unnamed Character', settings };
 
       // Сохраняем обновленные данные
       await db.chats.put(updatedChat);
@@ -224,11 +227,17 @@ function App() {
       setChats(prev => prev.map(c => c.id === existingChat.id ? updatedChat : c));
       setCharacters(prev => prev.map(c => c.id === existingCharacter.id ? updatedCharacter : c));
     }
-    setActivePanel(null);
+    // Панель остается открытой
   };
   
-  const handlePanelToggle = (panelType: 'character' | 'prompt-settings') => {
-    setActivePanel(prev => prev === panelType ? null : panelType);
+  const handlePanelToggle = (panelType: PanelType) => {
+    setActivePanels(prev => {
+      if (prev.includes(panelType)) {
+        return prev.filter(p => p !== panelType);
+      } else {
+        return [...prev, panelType];
+      }
+    });
   };
 
   if (loading) {
@@ -239,6 +248,9 @@ function App() {
   const currentCharacter = activeChatId ? characters.find(char => char.id === currentChat?.characterId) : defaultCharacter;
   const apiData = globalApis[0];
   const promptData = globalPrompts[0];
+  
+  const isCharacterPanelOpen = activePanels.includes('character');
+  const isPromptPanelOpen = activePanels.includes('prompt-settings');
 
   return (
     <div className="app-main-layout">
@@ -247,6 +259,8 @@ function App() {
         onModalClick={setActiveModal}
         onPanelToggle={handlePanelToggle}
         onNewChat={handleNewChat}
+        activeView={activeView}
+        activePanels={activePanels}
       />
 
       <main className="app-content">
@@ -258,26 +272,26 @@ function App() {
                 messages={currentChat?.messages || (currentCharacter?.settings?.firstMessage ? [{ role: 'assistant', content: currentCharacter.settings.firstMessage }] : [])}
                 onSendMessage={handleSendMessage}
                 // Поле ввода заблокировано, пока не выбран/создан чат
-                disabled={!activeChatId || activePanel === 'character'}
+                disabled={!activeChatId || isCharacterPanelOpen}
               />
             </div>
-            {activePanel === 'character' && currentCharacter && (
+            {isCharacterPanelOpen && currentCharacter && (
               <CharacterPanel
-                onClose={() => setActivePanel(null)}
+                onClose={() => handlePanelToggle('character')}
                 onSave={handleCharacterSave}
                 initialSettings={currentCharacter.settings}
               />
             )}
-            {activePanel === 'prompt-settings' && promptData && (
-              <PromptSettingsPanel
-                onClose={() => setActivePanel(null)}
-                onSave={handlePromptSave}
-                onCancel={() => setActivePanel(null)}
-                initialSettings={promptData.settings}
-                initialPrompt={promptData.systemPrompt}
-              />
-            )}
           </>
+        )}
+        {isPromptPanelOpen && promptData && (
+          <PromptSettingsPanel
+            onClose={() => handlePanelToggle('prompt-settings')}
+            onSave={handlePromptSave}
+            onCancel={() => handlePanelToggle('prompt-settings')}
+            initialSettings={promptData.settings}
+            initialPrompt={promptData.systemPrompt}
+          />
         )}
         {activeView === 'chat-list' && (
           <ChatList 

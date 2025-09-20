@@ -1,4 +1,4 @@
-// client\src\utils\api.ts
+// client/src/utils/api.ts
 import {
   Message,
   GenerationSettings,
@@ -12,9 +12,10 @@ const API_ENDPOINT = 'http://localhost:3001/api/generate';
 /**
  * @description Отправляет запрос к API для генерации текста.
  * @param messages - Массив сообщений чата.
- * @param settings - Настройки генерации.
+ * @param generationSettings - Настройки генерации.
  * @param apiSettings - Настройки API (ключ, провайдер, URL).
  * @param characterSettings - Настройки персонажа.
+ * @param systemPrompt - Пользовательский системный промпт. // <--- Добавили
  * @returns Промис с ответом от API.
  */
 export const generateText = async (
@@ -22,6 +23,7 @@ export const generateText = async (
   generationSettings: GenerationSettings,
   apiSettings: ApiSettings,
   characterSettings: CharacterSettings,
+  systemPrompt: string, // <--- Добавили
 ): Promise<ApiResponse> => {
   const { apiKey, provider, model, providerUrl } = apiSettings;
 
@@ -39,6 +41,7 @@ export const generateText = async (
         model,
         providerUrl,
         characterSettings,
+        systemPrompt, // <--- Добавили
       }),
     });
 
