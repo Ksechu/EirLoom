@@ -43,11 +43,11 @@ const PromptSettingsPanel: React.FC<PromptSettingsPanelProps> = ({ onClose, onSa
         <button onClick={onClose} className="panel-toggle-btn">
           <span className="arrow-icon">→</span>
         </button>
-        <h2>Настройки промпта</h2>
-        <button onClick={handleResetToDefault}>По умолчанию</button>
+        <h2 style={{ textAlign: "right" }}>Настройки промпта</h2>        
       </div>
 
       <div className="panel-controls">
+        <button onClick={handleResetToDefault}>По умолчанию</button>
         <div className="collapsible-section">
           <div className="collapsible-header" onClick={() => setIsPromptExpanded(!isPromptExpanded)}>
             <h3>Промпт</h3>

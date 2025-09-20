@@ -1,5 +1,5 @@
 // client/src/utils/api.ts
-import { Message, GenerationSettings } from '../types/api';
+import { Message, GenerationSettings, CharacterSettings } from '../types/api';
 
 export const generateText = async (
   messages: Message[],
@@ -9,6 +9,7 @@ export const generateText = async (
   model: string,
   providerUrl: string,
   systemPrompt: string,
+  characterSettings: CharacterSettings // Принимаем данные персонажа
 ) => {
   try {
     const response = await fetch('/api/generate', {
@@ -24,6 +25,7 @@ export const generateText = async (
         model,
         providerUrl,
         systemPrompt,
+        characterSettings // Передаем данные персонажа на бэкенд
       }),
     });
 

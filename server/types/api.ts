@@ -17,3 +17,13 @@ export interface GenerationSettings {
   top_k?: number;
   repetition_penalty?: number;
 }
+
+// Обновляем интерфейс для данных персонажа
+export interface CharacterSettings {
+  world: string;
+  characterPersona: string;
+  userPersona: string;
+  exampleDialogues: string;
+  firstMessage: string;
+  photoUrl: string; // В будущем здесь будет URL фото
+}
